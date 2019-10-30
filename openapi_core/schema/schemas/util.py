@@ -7,6 +7,14 @@ from six import string_types, text_type, integer_types
 import strict_rfc3339
 from uuid import UUID
 
+if hasattr(datetime.datetime, 'fromisoformat'):
+    datetime_fromisoformat = datetime.datetime.fromisoformat
+else:
+    def datetime_fromisoformat(value):
+        timestamp = strict_rfc3339.rfc3339_to_timestamp(value)
+        return datetime.datetime.fromtimestamp(
+            timestamp, tz=datetime.timezone.utc)
+
 
 def forcebool(val):
     if isinstance(val, string_types):
@@ -24,8 +32,7 @@ def format_date(value):
 
 
 def format_datetime(value):
-    timestamp = strict_rfc3339.rfc3339_to_timestamp(value)
-    return datetime.datetime.utcfromtimestamp(timestamp)
+    return datetime_fromisoformat(value)
 
 
 def format_uuid(value):
